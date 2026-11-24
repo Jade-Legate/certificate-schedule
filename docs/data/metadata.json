@@ -1,0 +1,32 @@
+{
+ "current_year": 2027,
+ "datasets": {
+  "2027": {
+   "year": 2027,
+   "title": "2027년도 국가기술자격 검정시행계획",
+   "announcement_no": "고용노동부 공고 제2026-518호",
+   "published": "2026-11-20",
+   "publisher": "고용노동부(관계부처 합동)",
+   "source_documents": [
+    "2027년 국가기술자격 검정시행계획(상세본, HWPX·PDF)",
+    "2027년 국가기술자격 검정시행계획(요약본, HWPX·PDF)"
+   ],
+   "data_updated": "2026-11-24",
+   "counts": {
+    "qualifications": 541,
+    "official_total": 538,
+    "schedules": 46,
+    "mappings": 1169
+   },
+   "validation": {
+    "summary": "전 항목 통과",
+    "passed": 42,
+    "total": 42
+   },
+   "scope_note": "국방부 시행 검정(67종목)은 일반 응시 대상이 아니므로 제외"
+  }
+ },
+ "years": [
+  2027
+ ]
+}

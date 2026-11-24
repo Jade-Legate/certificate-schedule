@@ -1,0 +1,92 @@
+[
+ {
+  "agency": "한국산업인력공단",
+  "expected": 489,
+  "actual": 489,
+  "ok": true
+ },
+ {
+  "agency": "대한상공회의소",
+  "expected": 16,
+  "actual": 16,
+  "ok": true
+ },
+ {
+  "agency": "한국원자력안전기술원",
+  "expected": 3,
+  "actual": 3,
+  "ok": true
+ },
+ {
+  "agency": "영화진흥위원회",
+  "expected": 2,
+  "actual": 2,
+  "ok": true
+ },
+ {
+  "agency": "한국콘텐츠진흥원",
+  "expected": 3,
+  "actual": 3,
+  "ok": true
+ },
+ {
+  "agency": "한국방송통신전파진흥원",
+  "expected": 16,
+  "actual": 16,
+  "ok": true
+ },
+ {
+  "agency": "한국광해광업공단",
+  "expected": 7,
+  "actual": 7,
+  "ok": true
+ },
+ {
+  "agency": "한국데이터산업진흥원",
+  "expected": 1,
+  "actual": 1,
+  "ok": true
+ },
+ {
+  "agency": "한국디자인진흥원",
+  "expected": 1,
+  "actual": 1,
+  "ok": true
+ },
+ {
+  "agency": "한국산업인력공단 기술사",
+  "expected": 79,
+  "actual": 79,
+  "ok": true
+ },
+ {
+  "agency": "한국산업인력공단 기능장",
+  "expected": 29,
+  "actual": 29,
+  "ok": true
+ },
+ {
+  "agency": "한국산업인력공단 기사",
+  "expected": 106,
+  "actual": 106,
+  "ok": true
+ },
+ {
+  "agency": "한국산업인력공단 산업기사",
+  "expected": 108,
+  "actual": 108,
+  "ok": true
+ },
+ {
+  "agency": "한국산업인력공단 서비스",
+  "expected": 16,
+  "actual": 16,
+  "ok": true
+ },
+ {
+  "agency": "한국산업인력공단 기능사",
+  "expected": 151,
+  "actual": 151,
+  "ok": true
+ }
+]
