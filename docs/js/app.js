@@ -3,7 +3,7 @@ import { initAnalytics, track, trackSearch } from './analytics.js';
 import { GRADE_FILTERS, buildIndex, search, countByGrade } from './search.js';
 import {
   EXAM_TYPE_LABEL, STATUS_TEXT, todayKST, buildView, nextRegistration, roundTitle, phaseRows,
-  fmtDate, fmtPeriod, scheduleText, buildICS,
+  fmtDate, fmtPeriod,
 } from './schedule.js';
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -81,12 +81,6 @@ function writeURL(push) {
   const url = `${location.pathname}?${p.toString()}`;
   if (url === `${location.pathname}${location.search}`) return;
   history[push ? 'pushState' : 'replaceState']({ ...state, data: null }, '', url);
-}
-
-function shareURL(qid) {
-  const p = new URLSearchParams({ year: state.year });
-  if (qid) p.set('qualification', qid);
-  return `${CONFIG.siteUrl}?${p.toString()}`;
 }
 
 // ------------------------------------------------------------------ 목록
@@ -304,11 +298,7 @@ function renderDetail({ focus = false } = {}) {
   const actions = h('div', { class: 'actions' },
     h('a', { class: 'btn btn--primary btn--lg', href: url, target: '_blank', rel: 'noopener',
       onclick: () => track('official_site_click', { qualification_id: q.qualification_id, agency_id: q.agency_id }) },
-    `${ag.site_name} 바로가기`, h('span', { class: 'sr-only' }, ' (새 창)')),
-    h('div', { class: 'actions__row' },
-      h('button', { type: 'button', class: 'btn btn--ghost', onclick: () => share(q) }, '링크 공유'),
-      regularish.length ? h('button', { type: 'button', class: 'btn btn--ghost', onclick: () => copySchedule(view, ag) }, '일정 복사') : null,
-      regularish.length ? h('button', { type: 'button', class: 'btn btn--ghost', onclick: () => downloadICS(view, ag) }, '캘린더에 추가(.ics)') : null));
+    `${ag.site_name} 바로가기`, h('span', { class: 'sr-only' }, ' (새 창)')));
   parts.push(actions);
   parts.push(h('p', { class: 'source' }, `출처: 고용노동부 공고 제2026-518호 2027년 국가기술자격 검정시행계획 · ${q.source_reference}`));
 
@@ -325,38 +315,6 @@ function activateTab(tablist, btn) {
     const on = t === btn; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1;
     document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
   }
-}
-
-// ------------------------------------------------------------------ 액션
-function toast(msg) {
-  const t = $('#toast'); t.textContent = msg; t.classList.add('is-on');
-  clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('is-on'), 2400);
-}
-async function copyText(text) {
-  try { await navigator.clipboard.writeText(text); return true; } catch (_) {
-    const ta = h('textarea', { 'aria-hidden': 'true', style: 'position:fixed;opacity:0' }); ta.value = text; document.body.append(ta); ta.select();
-    let ok = false; try { ok = document.execCommand('copy'); } catch (_) { ok = false; } ta.remove(); return ok;
-  }
-}
-async function share(q) {
-  const url = shareURL(q.qualification_id);
-  track('share_click', { qualification_id: q.qualification_id, method: navigator.share && mq.matches ? 'native' : 'copy' });
-  if (navigator.share && mq.matches) {
-    try { await navigator.share({ title: `${q.name} 2027 시험일정`, url }); return; } catch (e) { if (e.name === 'AbortError') return; }
-  }
-  toast(await copyText(url) ? '링크를 복사했어요.' : '복사에 실패했어요. 주소창의 링크를 이용해 주세요.');
-}
-async function copySchedule(view, ag) {
-  const ok = await copyText(scheduleText(view, ag.name, shareURL(view.q.qualification_id)));
-  track('share_click', { qualification_id: view.q.qualification_id, method: 'copy_schedule' });
-  toast(ok ? '시험일정을 복사했어요.' : '복사에 실패했어요.');
-}
-function downloadICS(view, ag) {
-  const blob = new Blob([buildICS(view, ag.name, shareURL(view.q.qualification_id))], { type: 'text/calendar;charset=utf-8' });
-  const a = h('a', { href: URL.createObjectURL(blob), download: `${view.q.name}_2027_시험일정.ics` });
-  document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
-  track('share_click', { qualification_id: view.q.qualification_id, method: 'ics' });
-  toast('캘린더 파일(.ics)을 내려받았어요.');
 }
 
 // ------------------------------------------------------------------ 상호작용
@@ -395,12 +353,10 @@ function renderSource(meta) {
   ];
   const dl = h('dl', { class: 'meta' }, items.map(([k, v]) => h('div', {}, h('dt', {}, k), h('dd', {}, v))));
   const links = h('ul', { class: 'agency-links' }, ctx.agencyList.map((a) => h('li', {}, h('a', { href: a.official_url, target: '_blank', rel: 'noopener' }, a.name, h('span', { class: 'sr-only' }, ' (새 창)')))));
-  $('#source-info').replaceChildren(
-    h('div', {}, h('h2', { class: 'footer__title' }, '데이터 출처'), dl),
-    h('div', {}, h('h2', { class: 'footer__title' }, '시행기관'), links));
+  $('#source-info').replaceChildren(h('div', {}, h('h2', { class: 'footer__title' }, '데이터 출처'), dl));
   $('#source-body').replaceChildren(dl.cloneNode(true),
     h('p', { class: 'small' }, '고용노동부가 공고한 검정시행계획의 상세본(HWPX)에서 일정을 추출하고, 공식 PDF와 대조해 검증했습니다. 시험일정은 시행기관 사정에 따라 변경될 수 있으니 원서접수 전 반드시 시행기관의 공식 공고를 확인하세요.'),
-    h('h3', { class: 'section__title' }, '시행기관 바로가기'), links.cloneNode(true));
+    h('h3', { class: 'section__title' }, '시행기관 바로가기'), links);
 }
 
 function showError(err) {

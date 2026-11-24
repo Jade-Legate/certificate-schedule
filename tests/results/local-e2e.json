@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:8765/certificate-schedule/",
- "at": "2026-11-24T05:06:32.685Z",
+ "at": "2026-11-24T06:53:37.923Z",
  "results": [
   {
    "name": "검색 우선순위: 전기기능사 완전일치 1순위",
@@ -303,19 +303,14 @@
    "detail": ""
   },
   {
-   "name": "ICS 생성: VCALENDAR·종일 일정·시각 미생성",
-   "ok": true,
-   "detail": "32 events"
-  },
-  {
-   "name": "일정 복사 텍스트",
+   "name": "링크 공유·일정 복사·캘린더 버튼 없음",
    "ok": true,
    "detail": ""
   },
   {
-   "name": "공유 링크 = 배포 주소 + qualification",
+   "name": "푸터에 시행기관 목록 없음(공식 자료 안내 창에만)",
    "ok": true,
-   "detail": "https://jade-legate.github.io/certificate-schedule/?year=2027&qualification=Q606349A4"
+   "detail": ""
   },
   {
    "name": "뷰포트 360px: 가로 스크롤 없음",

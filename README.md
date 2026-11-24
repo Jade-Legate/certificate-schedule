@@ -14,7 +14,7 @@ docs/                    # GitHub Pages 배포 폴더
   index.html  css/style.css
   js/app.js              # UI·URL 상태·상호작용
   js/search.js           # 검색 정규화·순위(완전일치 > 앞부분 > 부분 > 별칭)
-  js/schedule.js         # KST 날짜 계산·접수 상태·복사 텍스트·ICS
+  js/schedule.js         # KST 날짜 계산·접수 상태
   js/config.js           # 운영 설정값 (로드맵 URL, GA4 ID 등)
   js/analytics.js        # GA4 (ID가 없으면 비활성)
   assets/                # 로고·파비콘·OG 이미지·Pretendard(OFL, 자체 호스팅)
@@ -59,7 +59,7 @@ E2E QA는 Playwright가 필요합니다(`npm i`). `BASE=http://localhost:8765/ce
 | `siteUrl` | 공유 링크와 canonical 기준 주소 | 배포 주소 |
 | `suggestions` | 추천 검색어 | |
 
-GA4 이벤트: `page_view`(자동), `certificate_search`(입력이 멈춘 뒤 1회, 결과 건수와 검색어 길이만 전송), `search_no_result`, `certificate_select`, `schedule_view`, `official_site_click`, `roadmap_cta_click`, `share_click`(method: copy · native · copy_schedule · ics). 검색어 원문과 개인정보는 전송하지 않습니다.
+GA4 이벤트: `page_view`(자동), `certificate_search`(입력이 멈춘 뒤 1회, 결과 건수와 검색어 길이만 전송), `search_no_result`, `certificate_select`, `schedule_view`, `official_site_click`, `roadmap_cta_click`. 검색어 원문과 개인정보는 전송하지 않습니다.
 
 URL 파라미터는 `?year=2027`, `&q=전기기능사`, `&grade=craft|industrial|engineer|master|pe|service`, `&qualification=<ID>`를 지원합니다. `utm_*` 파라미터는 화면 상태가 바뀌어도 유지됩니다.
 
@@ -69,7 +69,7 @@ URL 파라미터는 `?year=2027`, `&q=전기기능사`, `&grade=craft|industrial
 https://jade-legate.github.io/certificate-schedule/?year=2027&utm_source=naver_blog&utm_medium=referral&utm_campaign=2027_certificate_schedule&utm_content=schedule_table_bottom
 ```
 
-삽입 위치마다 `utm_content` 값만 바꿔 사용합니다(예: `intro_banner`, `schedule_table_bottom`, `post_footer`). 특정 종목 글에서는 `&qualification=<ID>`를 붙이면 해당 종목 상세가 바로 열립니다. ID는 검색기에서 종목을 연 뒤 ‘링크 공유’로 복사할 수 있습니다.
+삽입 위치마다 `utm_content` 값만 바꿔 사용합니다(예: `intro_banner`, `schedule_table_bottom`, `post_footer`). 특정 종목 글에서는 `&qualification=<ID>`를 붙이면 해당 종목 상세가 바로 열립니다. ID는 검색기에서 종목을 연 뒤 주소창에서 확인할 수 있습니다.
 
 ## 연도별 데이터 업데이트 방법 (예: 2028년)
 

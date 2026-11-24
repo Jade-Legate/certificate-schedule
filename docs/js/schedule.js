@@ -1,4 +1,4 @@
-// 시험일정 도메인 로직: KST 기준 날짜 계산, 접수 상태, 종목별 일정 뷰모델, 복사 텍스트, ICS
+// 시험일정 도메인 로직: KST 기준 날짜 계산, 접수 상태, 종목별 일정 뷰모델
 // 공식 접수 시각이 날짜 데이터에 없으므로 시각을 만들어 내지 않는다(종일 일정·날짜 단위 비교).
 
 const WD = ['일', '월', '화', '수', '목', '금', '토'];
@@ -134,57 +134,4 @@ export function phaseRows(p, today, { isLastPhase } = {}) {
       correction: p.correction || null });
   }
   return rows;
-}
-
-// ------------------------------------------------------------------ 복사·ICS
-export function scheduleText(view, agencyName, siteLink) {
-  const lines = [`[${view.q.name}] 2027년 시험일정 (${agencyName})`];
-  for (const it of view.items) {
-    if (it.schedule.exam_type === 'rolling') { lines.push(`- 상시검정: 세부 일정은 시행기관 별도 공고 확인`); continue; }
-    lines.push(`■ ${roundTitle(it)}`);
-    it.phases.forEach((p, i) => {
-      for (const r of phaseRows(p, '0000-00-00', { isLastPhase: i === it.phases.length - 1 })) {
-        if (r.kind === 'docs') continue;
-        lines.push(`  · ${r.label}: ${r.values.join(', ')}${r.extra?.length ? ` (${r.extra.join(', ')})` : ''}`);
-      }
-    });
-  }
-  lines.push('※ 일정은 시행기관 사정에 따라 변경될 수 있으니 공식 공고를 확인하세요.');
-  if (siteLink) lines.push(siteLink);
-  return lines.join('\n');
-}
-
-function icsEsc(s) { return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n'); }
-function icsDate(iso) { return iso.replace(/-/g, ''); }
-function plusOne(iso) { const d = new Date(toUTC(iso) + 86400000); return d.toISOString().slice(0, 10); }
-function fold(line) {
-  // RFC 5545: 75 octets 단위 줄 접기 (UTF-8 기준 근사: 문자 단위로 안전하게 자름)
-  const out = []; let cur = '';
-  for (const ch of line) {
-    if (new TextEncoder().encode(cur + ch).length > 73) { out.push(cur); cur = ' ' + ch; } else cur += ch;
-  }
-  out.push(cur); return out.join('\r\n');
-}
-
-export function buildICS(view, agencyName, link) {
-  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
-  const ev = [];
-  const add = (summary, start, end, desc) => {
-    ev.push(['BEGIN:VEVENT', `UID:${view.q.qualification_id}-${icsDate(start)}-${ev.length}@certificate-schedule`,
-      `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${icsDate(start)}`, `DTEND;VALUE=DATE:${icsDate(plusOne(end))}`,
-      `SUMMARY:${icsEsc(summary)}`, `DESCRIPTION:${icsEsc(desc)}`, 'TRANSP:TRANSPARENT', 'END:VEVENT'].map(fold).join('\r\n'));
-  };
-  for (const it of view.items) {
-    if (it.schedule.exam_type === 'rolling') continue;
-    const rt = roundTitle(it);
-    it.phases.forEach((p, i) => {
-      const L = PHASE_LABEL[p.phase];
-      const desc = `${agencyName} · ${EXAM_TYPE_LABEL[it.schedule.exam_type]}\n시험일정은 변경될 수 있으니 공식 공고를 확인하세요.\n${link}`;
-      (p.registration_periods || []).forEach((r) => add(`[${view.q.name}] ${rt} ${L} 원서접수${r.label ? ` ${r.label}` : ''}`, r.start, r.end, desc));
-      (p.exam_periods || []).forEach((r) => add(`[${view.q.name}] ${rt} ${L}시험${r.start !== r.end ? ' 기간' : ''}`, r.start, r.end, desc));
-      (p.result_dates || []).forEach((r) => add(`[${view.q.name}] ${rt} ${i === it.phases.length - 1 ? '최종' : L} 합격자 발표${r.label ? ` (${r.label})` : ''}`, r.date, r.date, desc));
-    });
-  }
-  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//DEBUT//Certificate Schedule 2027//KO', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
-    `X-WR-CALNAME:${icsEsc(view.q.name + ' 2027 시험일정')}`, 'X-WR-TIMEZONE:Asia/Seoul', ...ev, 'END:VCALENDAR'].join('\r\n') + '\r\n';
 }

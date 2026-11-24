@@ -162,7 +162,6 @@ a { color: var(--brand-strong); }
 
 .eligibility { margin: 18px 0 0; font-size: 14px; color: var(--text-2); background: var(--grey-1); border-radius: 10px; padding: 12px 14px; }
 .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-.actions__row { display: flex; flex-wrap: wrap; gap: 8px; }
 .source { margin: 18px 0 0; font-size: 12px; color: var(--text-3); }
 
 /* CTA */
@@ -172,7 +171,7 @@ a { color: var(--brand-strong); }
 
 /* 푸터 */
 .footer { margin-top: 40px; padding: 32px 0 48px; background: var(--grey-0); border-top: 1px solid var(--grey-3); font-size: 14px; color: var(--text-2); }
-.footer__grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+.footer__grid { display: grid; grid-template-columns: 1fr; gap: 24px; max-width: 760px; }
 .footer__title { font-size: 15px; margin: 0 0 10px; color: var(--grey-10); }
 .meta { margin: 0; display: grid; gap: 6px; }
 .meta div { display: grid; grid-template-columns: 140px 1fr; gap: 12px; }
@@ -193,8 +192,6 @@ a { color: var(--brand-strong); }
 .icon-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 10px; background: none; cursor: pointer; }
 .icon-btn svg { width: 22px; height: 22px; }
 
-.toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; background: var(--grey-10); color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 15px; pointer-events: none; transition: .2s; z-index: 60; max-width: calc(100vw - 32px); }
-.toast.is-on { opacity: 1; transform: translate(-50%, 0); }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 
@@ -221,10 +218,8 @@ a { color: var(--brand-strong); }
   .timeline dt { font-size: 14px; color: var(--text-3); }
   .next .chip { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
   .actions .btn--lg { width: 100%; }
-  .actions__row .btn { flex: 1 1 auto; }
   .cta { flex-direction: column; align-items: stretch; padding: 22px 20px; }
   .cta .btn { width: 100%; white-space: normal; text-align: center; }
-  .footer__grid { grid-template-columns: 1fr; }
   .meta div { grid-template-columns: 1fr; gap: 0; }
   .modal__body .agency-links { grid-template-columns: 1fr; }
 }

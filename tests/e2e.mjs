@@ -190,18 +190,10 @@ await page.keyboard.press('Escape'); ok('모달 Esc 닫힘', !(await page.locato
 const srcTxt = await page.locator('#source-info').innerText();
 ok('출처·공고번호·발표일·업데이트일 표기', ['고용노동부 공고 제2026-518호', '2026. 11. 20.(금)', '데이터 최종 업데이트'].every((x) => srcTxt.includes(x)));
 
-// ICS·복사
-const qpage = await newPage({ width: 1280, height: 900 }, { permissions: ['clipboard-read', 'clipboard-write'] });
-await qpage.goto(`${BASE}?year=2027&qualification=${qid}`); await qpage.waitForSelector('#detail-title');
-const [dl] = await Promise.all([qpage.waitForEvent('download'), qpage.getByRole('button', { name: '캘린더에 추가(.ics)' }).click()]);
-const icsPath = `${OUT}/전기기능사.ics`; await dl.saveAs(icsPath); const ics = fs.readFileSync(icsPath, 'utf8');
-ok('ICS 생성: VCALENDAR·종일 일정·시각 미생성', ics.startsWith('BEGIN:VCALENDAR') && ics.includes('DTSTART;VALUE=DATE:20270105') && ics.includes('DTEND;VALUE=DATE:20270109') && !/DTSTART:\d{8}T/.test(ics), `${(ics.match(/BEGIN:VEVENT/g) || []).length} events`);
-await qpage.getByRole('button', { name: '일정 복사' }).click(); await qpage.waitForTimeout(200);
-const clip = await qpage.evaluate(() => navigator.clipboard.readText());
-ok('일정 복사 텍스트', clip.startsWith('[전기기능사] 2027년 시험일정') && clip.includes('필기 원서접수: 1. 5.(화) ~ 1. 8.(금)'));
-await qpage.getByRole('button', { name: '링크 공유' }).click(); await qpage.waitForTimeout(200);
-const link = await qpage.evaluate(() => navigator.clipboard.readText());
-ok('공유 링크 = 배포 주소 + qualification', link === `https://jade-legate.github.io/certificate-schedule/?year=2027&qualification=${qid}`, link);
+// 제거된 기능·푸터
+await page.goto(`${BASE}?year=2027&qualification=${qid}`); await page.waitForSelector('#detail-title');
+ok('링크 공유·일정 복사·캘린더 버튼 없음', (await page.locator('#detail button', { hasText: /링크 공유|일정 복사|캘린더/ }).count()) === 0);
+ok('푸터에 시행기관 목록 없음(공식 자료 안내 창에만)', (await page.locator('#source-info .agency-links').count()) === 0 && (await page.locator('#source-body .agency-links a').count()) === 10);
 
 // 뷰포트
 for (const [w, hgt] of [[360, 780], [390, 844], [768, 1024], [1280, 900], [1440, 900], [1920, 1080]]) {
