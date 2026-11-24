@@ -93,5 +93,5 @@ https://jade-legate.github.io/certificate-schedule/?year=2027&utm_source=naver_b
 
 ## 라이선스와 브랜드
 
-- Pretendard: SIL Open Font License 1.1 (`docs/assets/fonts/pretendard.css` 머리말에 고지 포함)
+- Pretendard: SIL Open Font License 1.1 — 전문은 `docs/assets/fonts/LICENSE-Pretendard-OFL.txt` (폰트 파일과 함께 배포)
 - 데뷔 로고: 담당자 승인(2026-11-24)을 받아 Figma 원본(`Logo` 컴포넌트)을 SVG로 내보내 `docs/assets/logo.svg`로 사용합니다. OG 이미지와 아이콘은 `scripts/make_assets.py`로 생성합니다.
