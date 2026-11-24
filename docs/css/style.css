@@ -82,7 +82,8 @@ a { color: var(--brand-strong); }
 .results__list { list-style: none; margin: 0; padding: 6px; overflow-y: auto; }
 .item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 10px; color: inherit; text-decoration: none; min-height: 56px; }
 .item:hover { background: var(--grey-1); }
-.item.is-on { background: var(--brand-soft); box-shadow: inset 3px 0 0 var(--brand); }
+.item.is-on { background: var(--grey-2); }
+.item.is-on .item__name { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .item__main { display: flex; flex-direction: column; min-width: 0; }
 .item__name { font-weight: 700; font-size: 16px; line-height: 1.4; }
 .item__meta { font-size: 13px; color: var(--text-3); }
@@ -160,11 +161,15 @@ a { color: var(--brand-strong); }
 .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
 .source { margin: 18px 0 0; font-size: 12px; color: var(--text-3); }
 
-/* CTA */
-.cta { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 28px 0 0; padding: 28px 32px; border-radius: var(--radius); background: var(--grey-10); color: #fff; }
-.cta__eyebrow { margin: 0 0 4px; color: #ffb3c8; font-weight: 700; font-size: 15px; }
-.cta__title { margin: 0; font-size: 18px; line-height: 1.5; font-weight: 600; }
-
+/* 데뷔 로드맵 배너 (슬림) */
+.promo { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding: 10px 16px; min-height: 44px; border-radius: 10px; background: var(--grey-10); color: #fff; text-decoration: none; font-size: 14px; }
+.promo strong { font-weight: 700; }
+.promo__sub { color: #d1d3d8; }
+.promo__go { flex: none; font-weight: 700; color: #ffb3c8; }
+.promo:hover .promo__go { text-decoration: underline; }
+.disclaimer { margin: -12px 0 20px; font-size: 14px; color: var(--text-2); }
+.disclaimer a { color: var(--text-2); font-weight: 600; }
+.caution { margin: 0; font-size: 13px; color: var(--text-3); }
 /* 푸터 */
 .footer { margin-top: 40px; padding: 32px 0 48px; background: var(--grey-0); border-top: 1px solid var(--grey-3); font-size: 14px; color: var(--text-2); }
 .footer__grid { display: grid; grid-template-columns: 1fr; gap: 24px; max-width: 760px; }
@@ -214,8 +219,10 @@ a { color: var(--brand-strong); }
   .timeline dt { font-size: 14px; color: var(--text-3); }
   .next .chip { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 6px; }
   .actions .btn--lg { width: 100%; }
-  .cta { flex-direction: column; align-items: stretch; padding: 22px 20px; }
-  .cta .btn { width: 100%; white-space: normal; text-align: center; }
+  .promo { margin-top: 12px; }
+  .promo__sub { display: none; }
+  body.has-selection .promo { display: none; }
+  .disclaimer { margin: -8px 0 14px; font-size: 13px; }
   .meta div { grid-template-columns: 1fr; gap: 0; }
   .modal__body .agency-links { grid-template-columns: 1fr; }
 }

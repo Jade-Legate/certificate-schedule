@@ -13,14 +13,15 @@ meta['datasets'][year] = {
     'year': int(year),
     'title': f'{year}년도 국가기술자격 검정시행계획',
     'announcement_no': '고용노동부 공고 제2026-518호',
-    'published': '2026-11-20',
+    'published': '2026-11-20',   # 문서에 기재된 공고일
+    'posted': '2026-11-23',      # 고용노동부 누리집 게시일
     'publisher': '고용노동부(관계부처 합동)',
     'source_documents': [f'{year}년 국가기술자격 검정시행계획(상세본, HWPX·PDF)', f'{year}년 국가기술자격 검정시행계획(요약본, HWPX·PDF)'],
     'data_updated': updated,
     'counts': {'qualifications': len(q), 'official_total': sum(1 for x in q if x['annual_status'] not in ('abolished', 'not_conducted')),
                'schedules': len(s), 'mappings': len(m)},
     'validation': {'summary': passed.group(1) if passed else None, 'passed': int(passed.group(2)) if passed else None, 'total': int(passed.group(3)) if passed else None},
-    'scope_note': '국방부 시행 검정(67종목)은 일반 응시 대상이 아니므로 제외',
+    'scope_note': '국방부 시행 군 검정(67종목)은 일반인 응시 대상이 아니어서 제외했습니다.',
 }
 meta['years'] = sorted(int(k) for k in meta['datasets'])
 meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding='utf-8')

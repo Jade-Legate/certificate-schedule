@@ -105,7 +105,7 @@ ok('타워크레인설치해체: 검정형 미실시 문구(폐지 문구 아님
 
 // 11 빅데이터분석기사 — 수정 발표일
 await openQ(page, '빅분기'); await pick(page, '빅데이터분석기사'); t = await detailText(page);
-ok('빅데이터분석기사: 제14회 최종발표 2027.7.16', t.includes('7. 16.(금)') && t.includes('2027년으로 바로잡았어요'));
+ok('빅데이터분석기사: 제14회 최종발표 2027.7.16', t.includes('7. 16.(금)') && t.includes('2027년 오기로 보고 표시했어요') && t.includes('정정 공고로 확인된 내용은 아니니'));
 await page.getByRole('tab', { name: '제15회' }).click(); t = await page.locator('.round-panel:not([hidden])').innerText();
 ok('빅데이터분석기사: 제15회 최종발표 2027.12.17', t.includes('12. 17.(금)'));
 
@@ -130,7 +130,9 @@ await openQ(page, '임업종묘'); const lim = await page.locator('#results .ite
 ok('구 종목명 별칭: 임업종묘 → 실제 종목(임업종묘기능사) 우선, 별칭(산림종묘기사) 포함', lim[0] === '임업종묘기능사' && lim.includes('산림종묘기사'), lim.join(','));
 
 // 데뷔 로드맵 CTA
-ok('로드맵 CTA 노출 + 설정 URL 연결(새 창)', await page.locator('#cta').isVisible() && (await page.locator('#cta-link').getAttribute('href')).startsWith('https://debut.ai.kr/') && (await page.locator('#cta-link').getAttribute('target')) === '_blank');
+ok('로드맵 슬림 배너: 검색 영역 바로 아래 + 설정 URL(새 창)', await page.locator('#cta').isVisible() && (await page.locator('#cta').getAttribute('href')).startsWith('https://debut.ai.kr/') && (await page.locator('#cta').getAttribute('target')) === '_blank' && (await page.locator('#cta').boundingBox()).height <= 60 && await page.evaluate(() => document.querySelector('#cta').compareDocumentPosition(document.querySelector('#layout')) & Node.DOCUMENT_POSITION_FOLLOWING));
+ok('비공식 서비스·큐넷 확인 안내(상단·상세·푸터)', (await page.locator('.disclaimer').innerText()).includes('비공식 참고 서비스') && (await page.locator('#footer').innerText()).includes('관계가 없습니다'));
+ok('선택 종목 표시: 왼쪽 강조선 없음', await page.evaluate(() => { const e = document.querySelector('.item.is-on'); return !e || getComputedStyle(e).boxShadow === 'none'; }));
 ok('공식 로고 표시', await page.locator('.logo img[src="assets/logo.svg"]').isVisible() && await page.evaluate(() => document.querySelector('.logo img').naturalWidth > 0));
 
 // 14 존재하지 않는 자격증
@@ -188,7 +190,7 @@ ok('키보드: 등급 필터 방향키', (await page.locator('[role=radio][aria-
 await page.click('#open-source'); ok('공식 자료 안내 모달 열림', await page.locator('#source-dialog').isVisible());
 await page.keyboard.press('Escape'); ok('모달 Esc 닫힘', !(await page.locator('#source-dialog').isVisible()));
 const srcTxt = await page.locator('#source-info').innerText();
-ok('출처·공고번호·발표일·업데이트일 표기', ['고용노동부 공고 제2026-518호', '2026. 11. 20.(금)', '데이터 최종 업데이트'].every((x) => srcTxt.includes(x)));
+ok('출처·공고번호·공고일·게시일·업데이트일·저작권·국방부 제외 표기', ['고용노동부 공고 제2026-518호', '2026. 11. 20.(금)', '2026. 11. 23.(월)', '데이터 최종 업데이트', '고용노동부 저작권 정책', '국방부', '541종목'].every((x) => srcTxt.includes(x)), srcTxt.slice(0, 80));
 
 // 제거된 기능·푸터
 await page.goto(`${BASE}?year=2027&qualification=${qid}`); await page.waitForSelector('#detail-title');

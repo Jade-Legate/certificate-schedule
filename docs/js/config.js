@@ -9,6 +9,13 @@ export const CONFIG = {
   // 데뷔 로드맵 URL (담당자 제공값, 2026-11-24). 비우면 CTA 영역 미노출
   roadmapUrl: 'https://debut.ai.kr/?utm_source=naver_blog&utm_medium=referral&utm_campaign=blog&utm_content=post_18',
 
+  // 오류 신고·문의처 (이메일 또는 URL). 비어 있으면 푸터에 표시하지 않는다 — 담당자 확인 필요
+  contact: '',
+
+  // 원문 출처
+  sourceNoticeListUrl: 'https://www.moel.go.kr/news/notice/noticeList.do',
+  sourceCopyrightUrl: 'https://www.moel.go.kr/site/copyright/copyrightList.do',
+
   // GA4 측정 ID (예: 'G-XXXXXXXXXX') — 비어 있으면 분석 스크립트를 로드하지 않는다
   ga4MeasurementId: '',
 

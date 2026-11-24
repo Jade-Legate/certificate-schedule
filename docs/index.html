@@ -41,6 +41,7 @@
         <p class="eyebrow">2027 국가기술자격</p>
         <h1 id="title">시험일정 검색기</h1>
         <p class="lead">자격증 이름으로 시행 회차, 원서접수, 시험일, 합격자 발표일을 한 번에 확인하세요.</p>
+        <p class="disclaimer" role="note"><strong>비공식 참고 서비스</strong>예요. 원서접수 전 최종 일정은 <a href="https://www.q-net.or.kr/" target="_blank" rel="noopener">큐넷(Q-Net)<span class="sr-only"> (새 창)</span></a> 등 시행기관 공고에서 꼭 확인하세요.</p>
         <form class="search" role="search" id="search-form" autocomplete="off">
           <label for="q" class="sr-only">자격증명 검색</label>
           <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -54,6 +55,10 @@
     </section>
 
     <div class="wrap">
+      <a class="promo" id="cta" hidden href="#" target="_blank" rel="noopener">
+        <span class="promo__text"><strong>어떤 자격증을 준비해야 할지 모르겠다면?</strong> <span class="promo__sub">데뷔 로드맵에서 희망 직무별 자격증을 확인해 보세요</span></span>
+        <span class="promo__go" aria-hidden="true">로드맵 보기 →</span><span class="sr-only"> (새 창)</span>
+      </a>
       <nav class="tabs" aria-label="자격 등급 필터">
         <div class="tabs__scroll" id="grades" role="radiogroup" aria-label="자격 등급"></div>
       </nav>
@@ -75,21 +80,14 @@
         </section>
       </div>
 
-      <section class="cta" id="cta" hidden aria-labelledby="cta-title">
-        <div>
-          <p class="cta__eyebrow">어떤 자격증을 준비해야 할지 모르겠다면?</p>
-          <h2 id="cta-title" class="cta__title">데뷔 로드맵에서 희망 직무에 필요한 자격증, 교과목, 교내활동, 프로젝트를 확인해 보세요.</h2>
-        </div>
-        <a class="btn btn--primary btn--lg" id="cta-link" href="#" target="_blank" rel="noopener">내 희망 직무에 필요한 자격증 확인하기</a>
-      </section>
     </div>
   </main>
 
   <footer class="footer" id="footer">
     <div class="wrap">
       <div class="footer__grid" id="source-info"></div>
-      <p class="footer__note">본 검색기는 공식 검정시행계획을 정리한 참고용 서비스입니다. 시험일정은 천재지변·응시인원 등 사정에 따라 시행기관이 변경할 수 있으므로, 원서접수 전 반드시 시행기관의 공식 공고를 확인하세요.</p>
-      <p class="footer__brand">© 데뷔(DEBUT)</p>
+      <p class="footer__note">이 검색기는 데뷔(DEBUT)가 운영하는 <strong>비공식 참고 서비스</strong>로, 고용노동부·한국산업인력공단 등 정부기관이나 시행기관과 관계가 없습니다. 공고된 검정시행계획을 옮겨 정리했으며 자동 대조 검사를 거쳤지만, 시행기관의 확정 일정을 보증하지 않습니다. 시험일정은 시행기관 사정에 따라 바뀔 수 있으니 원서접수 전 반드시 큐넷(Q-Net) 등 시행기관의 공식 공고를 확인하세요.</p>
+      <p class="footer__brand" id="operator">운영 데뷔(DEBUT)</p>
     </div>
   </footer>
 

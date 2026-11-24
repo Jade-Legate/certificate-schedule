@@ -196,7 +196,7 @@ function renderPhaseTable(it, wrap) {
           r.status ? h('span', { class: `chip chip--${r.status.tone}` }, r.status.label) : null,
           (r.extra || []).map((x) => h('span', { class: 'timeline__extra' }, x)),
           r.correction ? h('span', { class: 'timeline__extra timeline__extra--fix' },
-            `원문 표기 ‘${r.correction.original}’은 연도 오기로 보여 2027년으로 바로잡았어요.`) : null)));
+            `공식 자료에는 ‘${r.correction.original}’로 적혀 있지만 시험일보다 앞선 날짜라 2027년 오기로 보고 표시했어요. 시행기관의 정정 공고로 확인된 내용은 아니니 접수 전 시행기관 누리집에서 확인하세요.`) : null)));
     }
   });
   wrap.append(dl);
@@ -298,7 +298,8 @@ function renderDetail({ focus = false } = {}) {
   const actions = h('div', { class: 'actions' },
     h('a', { class: 'btn btn--primary btn--lg', href: url, target: '_blank', rel: 'noopener',
       onclick: () => track('official_site_click', { qualification_id: q.qualification_id, agency_id: q.agency_id }) },
-    `${ag.site_name} 바로가기`, h('span', { class: 'sr-only' }, ' (새 창)')));
+    `${ag.site_name} 바로가기`, h('span', { class: 'sr-only' }, ' (새 창)')),
+    h('p', { class: 'caution' }, `공고된 계획을 정리한 참고용 일정이에요. 원서접수 전 ${ag.site_name}에서 최종 일정을 꼭 확인하세요.`));
   parts.push(actions);
   parts.push(h('p', { class: 'source' }, `출처: 고용노동부 공고 제2026-518호 2027년 국가기술자격 검정시행계획 · ${q.source_reference}`));
 
@@ -342,16 +343,25 @@ function onInput() {
 
 function renderSource(meta) {
   const ds = meta.datasets[String(state.year)];
+  const ext = (href, text) => h('a', { href, target: '_blank', rel: 'noopener' }, text, h('span', { class: 'sr-only' }, ' (새 창)'));
   const items = [
-    ['출처 문서', `${ds.title}(상세본·요약본)`], ['공고번호', ds.announcement_no], ['공식 발표일', fmtDate(ds.published, { year: true })],
-    ['데이터 최종 업데이트', fmtDate(ds.data_updated, { year: true })], ['수록 범위', `${ds.counts.qualifications}종목(공식 집계 ${ds.counts.official_total}종목 + 폐지·미실시 종목) · ${ds.scope_note}`],
+    ['출처 문서', h('span', {}, `${ds.title}(상세본·요약본) · `, ext(CONFIG.sourceNoticeListUrl, '고용노동부 공지사항'))],
+    ['공고번호', ds.announcement_no],
+    ['공고일', `${fmtDate(ds.published, { year: true })} (문서 기재) · 고용노동부 누리집 게시 ${fmtDate(ds.posted, { year: true })}`],
+    ['데이터 최종 업데이트', fmtDate(ds.data_updated, { year: true })],
+    ['수록 범위', `${ds.counts.qualifications}종목 = 공식 집계 ${ds.counts.official_total}종목 + 폐지 2종목 + 검정형 미실시 1종목. ${ds.scope_note}`],
+    ['저작권', h('span', {}, '원문 저작권은 고용노동부 및 관계기관에 있습니다. ', ext(CONFIG.sourceCopyrightUrl, '고용노동부 저작권 정책'))],
   ];
-  const dl = h('dl', { class: 'meta' }, items.map(([k, v]) => h('div', {}, h('dt', {}, k), h('dd', {}, v))));
-  const links = h('ul', { class: 'agency-links' }, ctx.agencyList.map((a) => h('li', {}, h('a', { href: a.official_url, target: '_blank', rel: 'noopener' }, a.name, h('span', { class: 'sr-only' }, ' (새 창)')))));
-  $('#source-info').replaceChildren(h('div', {}, h('h2', { class: 'footer__title' }, '데이터 출처'), dl));
-  $('#source-body').replaceChildren(dl.cloneNode(true),
-    h('p', { class: 'small' }, '고용노동부가 공고한 검정시행계획의 상세본(HWPX)에서 일정을 추출하고, 공식 PDF와 대조해 검증했습니다. 시험일정은 시행기관 사정에 따라 변경될 수 있으니 원서접수 전 반드시 시행기관의 공식 공고를 확인하세요.'),
+  const meta1 = () => h('dl', { class: 'meta' }, items.map(([k, v]) => h('div', {}, h('dt', {}, k), h('dd', {}, v instanceof Node ? v.cloneNode(true) : v))));
+  const links = h('ul', { class: 'agency-links' }, ctx.agencyList.map((a) => h('li', {}, ext(a.official_url, a.name))));
+  $('#source-info').replaceChildren(h('div', {}, h('h2', { class: 'footer__title' }, '데이터 출처'), meta1()));
+  $('#source-body').replaceChildren(meta1(),
+    h('p', { class: 'small' }, '데뷔(DEBUT)가 운영하는 비공식 참고 서비스입니다. 공고된 검정시행계획 상세본(HWPX)에서 일정을 옮기고 공식 PDF와 자동 대조 검사를 거쳤지만, 이는 데이터 옮김 과정의 점검일 뿐 시행기관의 확정 일정을 보증하지 않습니다. 원서접수 전 반드시 시행기관의 공식 공고를 확인하세요.'),
     h('h3', { class: 'section__title' }, '시행기관 바로가기'), links);
+  if (CONFIG.contact) {
+    const c = CONFIG.contact; const href = /^https?:/.test(c) ? c : `mailto:${c}`;
+    $('#operator').replaceChildren('운영 데뷔(DEBUT) · 오류 신고·문의 ', h('a', { href }, c));
+  }
 }
 
 function showError(err) {
@@ -369,8 +379,7 @@ async function init() {
   readURL();
   $('#q').value = state.q;
   if (CONFIG.roadmapUrl) {
-    const cta = $('#cta'); cta.hidden = false;
-    const a = $('#cta-link'); a.href = CONFIG.roadmapUrl;
+    const a = $('#cta'); a.hidden = false; a.href = CONFIG.roadmapUrl;
     a.addEventListener('click', () => track('roadmap_cta_click', { qualification_id: state.selected || '' }));
   }
   let meta;
