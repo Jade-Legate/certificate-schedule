@@ -340,11 +340,6 @@ function onInput() {
   clearTimeout(typingTimer); typingTimer = setTimeout(() => writeURL(false), 300);
 }
 
-function renderSuggest() {
-  $('#suggest').replaceChildren(h('span', { class: 'suggest__label' }, '추천 검색어'),
-    ...CONFIG.suggestions.map((s) => h('button', { type: 'button', class: 'suggest__chip', onclick: () => { $('#q').value = s; onInput(); writeURL(true); } }, s)));
-}
-
 function renderSource(meta) {
   const ds = meta.datasets[String(state.year)];
   const items = [
@@ -372,7 +367,6 @@ function showError(err) {
 async function init() {
   initAnalytics();
   readURL();
-  renderSuggest();
   $('#q').value = state.q;
   if (CONFIG.roadmapUrl) {
     const cta = $('#cta'); cta.hidden = false;

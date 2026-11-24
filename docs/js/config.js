@@ -13,8 +13,5 @@ export const CONFIG = {
   ga4MeasurementId: '',
 
   // 검색 이벤트 전송 지연(ms): 입력이 멈춘 뒤 한 번만 전송
-  searchEventDelay: 900,
-
-  // 추천 검색어
-  suggestions: ['전기기능사', '지게차', '컴활', '정보처리기사', '미용사', '한식조리'],
+  searchEventDelay: 900
 };

@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:8765/certificate-schedule/",
- "at": "2026-11-24T06:53:37.923Z",
+ "at": "2026-11-24T06:54:16.174Z",
  "results": [
   {
    "name": "검색 우선순위: 전기기능사 완전일치 1순위",
@@ -239,7 +239,7 @@
   },
   {
    "name": "잘못된 종목 ID 안내",
-   "ok": true,
+   "ok": false,
    "detail": ""
   },
   {

@@ -57,7 +57,6 @@ E2E QA는 Playwright가 필요합니다(`npm i`). `BASE=http://localhost:8765/ce
 | `roadmapUrl` | 데뷔 로드맵 CTA 링크. 비어 있으면 CTA 영역을 숨깁니다 | `https://debut.ai.kr/?utm_source=naver_blog&utm_medium=referral&utm_campaign=blog&utm_content=post_18` (담당자 제공) |
 | `ga4MeasurementId` | GA4 측정 ID(`G-…`). 비어 있으면 분석 스크립트를 로드하지 않습니다 | 미설정 |
 | `siteUrl` | 공유 링크와 canonical 기준 주소 | 배포 주소 |
-| `suggestions` | 추천 검색어 | |
 
 GA4 이벤트: `page_view`(자동), `certificate_search`(입력이 멈춘 뒤 1회, 결과 건수와 검색어 길이만 전송), `search_no_result`, `certificate_select`, `schedule_view`, `official_site_click`, `roadmap_cta_click`. 검색어 원문과 개인정보는 전송하지 않습니다.
 
