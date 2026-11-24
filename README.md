@@ -54,7 +54,7 @@ E2E QA는 Playwright가 필요합니다(`npm i`). `BASE=http://localhost:8765/ce
 
 | 키 | 설명 | 현재 |
 |---|---|---|
-| `roadmapUrl` | 데뷔 로드맵 CTA 링크. 비어 있으면 CTA 영역을 숨깁니다 | 미설정 (담당자 확인 필요) |
+| `roadmapUrl` | 데뷔 로드맵 CTA 링크. 비어 있으면 CTA 영역을 숨깁니다 | `https://debut.ai.kr/?utm_source=naver_blog&utm_medium=referral&utm_campaign=blog&utm_content=post_18` (담당자 제공) |
 | `ga4MeasurementId` | GA4 측정 ID(`G-…`). 비어 있으면 분석 스크립트를 로드하지 않습니다 | 미설정 |
 | `siteUrl` | 공유 링크와 canonical 기준 주소 | 배포 주소 |
 | `suggestions` | 추천 검색어 | |
@@ -94,4 +94,4 @@ https://jade-legate.github.io/certificate-schedule/?year=2027&utm_source=naver_b
 ## 라이선스와 브랜드
 
 - Pretendard: SIL Open Font License 1.1 (`docs/assets/fonts/pretendard.css` 머리말에 고지 포함)
-- 데뷔 로고와 브랜드 사용은 담당자 승인 대상입니다. 현재는 임시 텍스트 로고(`début 데뷔`)를 쓰고 있습니다.
+- 데뷔 로고: 담당자 승인(2026-11-24)을 받아 Figma 원본(`Logo` 컴포넌트)을 SVG로 내보내 `docs/assets/logo.svg`로 사용합니다. OG 이미지와 아이콘은 `scripts/make_assets.py`로 생성합니다.

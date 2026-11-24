@@ -129,6 +129,10 @@ ok('종목별 별도 시험일: 산림종묘기사 제3회 필답형 11.6', t.in
 await openQ(page, '임업종묘'); const lim = await page.locator('#results .item__name').allInnerTexts();
 ok('구 종목명 별칭: 임업종묘 → 실제 종목(임업종묘기능사) 우선, 별칭(산림종묘기사) 포함', lim[0] === '임업종묘기능사' && lim.includes('산림종묘기사'), lim.join(','));
 
+// 데뷔 로드맵 CTA
+ok('로드맵 CTA 노출 + 설정 URL 연결(새 창)', await page.locator('#cta').isVisible() && (await page.locator('#cta-link').getAttribute('href')).startsWith('https://debut.ai.kr/') && (await page.locator('#cta-link').getAttribute('target')) === '_blank');
+ok('공식 로고 표시', await page.locator('.logo img[src="assets/logo.svg"]').isVisible() && await page.evaluate(() => document.querySelector('.logo img').naturalWidth > 0));
+
 // 14 존재하지 않는 자격증
 await openQ(page, '우주비행사');
 ok('검색 결과 없음 안내', await page.locator('#empty').isVisible() && (await page.locator('#count').innerText()).includes('0건'));

@@ -6,8 +6,8 @@ export const CONFIG = {
   // 기본 연도 (data/metadata.json 의 current_year 가 우선)
   defaultYear: 2027,
 
-  // 데뷔 로드맵 URL — 담당자 확인 전까지 비워 둔다(비어 있으면 CTA 버튼 미노출)
-  roadmapUrl: '',
+  // 데뷔 로드맵 URL (담당자 제공값, 2026-11-24). 비우면 CTA 영역 미노출
+  roadmapUrl: 'https://debut.ai.kr/?utm_source=naver_blog&utm_medium=referral&utm_campaign=blog&utm_content=post_18',
 
   // GA4 측정 ID (예: 'G-XXXXXXXXXX') — 비어 있으면 분석 스크립트를 로드하지 않는다
   ga4MeasurementId: '',

@@ -29,7 +29,8 @@ a { color: var(--brand-strong); }
 /* 상단바 */
 .topbar { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.96); border-bottom: 1px solid var(--grey-3); backdrop-filter: saturate(180%) blur(8px); }
 .topbar__inner { display: flex; align-items: center; justify-content: space-between; height: 60px; }
-.logo { display: inline-flex; align-items: baseline; gap: 6px; text-decoration: none; color: var(--grey-10); }
+.logo { display: inline-flex; align-items: center; padding: 4px 0; }
+.logo img { display: block; height: 28px; width: auto; }
 .logo__en { font-weight: 800; font-size: 24px; letter-spacing: -0.04em; }
 .logo__ko { font-weight: 700; font-size: 19px; color: var(--grey-10); }
 .link-btn { background: none; border: 0; padding: 10px 6px; font-size: 15px; font-weight: 600; color: var(--text-2); cursor: pointer; border-radius: 8px; }
