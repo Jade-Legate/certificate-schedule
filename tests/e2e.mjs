@@ -152,7 +152,7 @@ ok('URL 직접 접속: 종목 상세 복원', (await page.locator('#detail-title
 ok('URL 직접 접속: 문서 제목 갱신', (await page.title()).startsWith('전기기능사'));
 await page.reload(); await page.waitForSelector('#detail-title');
 ok('새로고침 후 상태 유지', (await page.locator('#detail-title').innerText()) === '전기기능사');
-await page.goto(`${BASE}?year=2027&qualification=QNOTEXIST`); await page.waitForSelector('#detail');
+await page.goto(`${BASE}?year=2027&qualification=QNOTEXIST`); await page.waitForSelector('#results .item');
 ok('잘못된 종목 ID 안내', (await detailText(page)).includes('해당 자격증을 찾을 수 없어요'));
 // UTM 보존
 await page.goto(`${BASE}?utm_source=naver_blog&utm_medium=referral&utm_campaign=2027_certificate_schedule&utm_content=schedule_table_bottom`);
