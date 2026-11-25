@@ -95,8 +95,9 @@ function badgeFor(q) {
   if (view.items.every((i) => i.schedule.exam_type === 'rolling')) return h('span', { class: 'chip chip--info' }, '상시검정');
   const nx = nextRegistration(view, TODAY);
   if (!nx) return h('span', { class: 'chip chip--muted' }, '2027 접수 종료');
-  const tone = nx.status.key === 'open' ? 'open' : 'upcoming';
-  return h('span', { class: `chip chip--${tone}` }, nx.status.key === 'open' ? '접수 중' : `${fmtDate(nx.period.start).replace(/\(.\)$/, '')} 접수`);
+  if (nx.status.key === 'open') return h('span', { class: 'chip chip--open' }, '접수 중');
+  const md = fmtDate(nx.period.start).replace(/\s/g, '').replace(/\.\(.\)$/, '').replace(/\.$/, '');
+  return h('span', { class: 'chip chip--upcoming', title: `다음 원서접수 시작 ${fmtDate(nx.period.start)}` }, `${md} 접수 시작`);
 }
 
 function renderGrades(counts) {
@@ -187,12 +188,22 @@ function statusBanner(q) {
     extra.length ? h('ul', { class: 'notice__list' }, extra.map((t) => h('li', {}, t))) : null);
 }
 
+const PHASE_NAME = { written: '필기', practical: '실기', interview: '면접' };
+function rowLabel(label, phase) {
+  // 단계 묶음 제목이 있으므로 행 이름에서 단계명을 뺀다 ('필기 원서접수' → '원서접수', '필기시험' → '시험일')
+  const name = PHASE_NAME[phase];
+  if (label === `${name}시험`) return '시험일';
+  return label.startsWith(`${name} `) ? label.slice(name.length + 1) : label;
+}
+
 function renderPhaseTable(it, wrap) {
-  const dl = h('dl', { class: 'timeline' });
   it.phases.forEach((p, i) => {
+    const group = h('section', { class: 'phase', 'aria-label': `${PHASE_NAME[p.phase]} 일정` },
+      h('h4', { class: 'phase__title' }, PHASE_NAME[p.phase]));
+    const dl = h('dl', { class: 'timeline' });
     for (const r of phaseRows(p, TODAY, { isLastPhase: i === it.phases.length - 1 })) {
       dl.append(h('div', { class: `timeline__row timeline__row--${r.kind}` },
-        h('dt', {}, r.label),
+        h('dt', {}, rowLabel(r.label, p.phase)),
         h('dd', {},
           h('span', { class: 'timeline__values' }, r.values.map((v) => h('span', { class: 'timeline__value' }, v))),
           r.status ? h('span', { class: `chip chip--${r.status.tone}` }, r.status.label) : null,
@@ -200,8 +211,9 @@ function renderPhaseTable(it, wrap) {
           r.correction ? h('span', { class: 'timeline__extra timeline__extra--fix' },
             `공식 자료에는 ‘${r.correction.original}’로 적혀 있지만 시험일보다 앞선 날짜라 2027년 오기로 보고 표시했어요. 시행기관의 정정 공고로 확인된 내용은 아니니 접수 전 시행기관 누리집에서 확인하세요.`) : null)));
     }
+    group.append(dl);
+    wrap.append(group);
   });
-  wrap.append(dl);
   if (it.noWritten) wrap.append(h('p', { class: 'muted small' }, '이 종목은 필기시험 없이 실기시험만 시행해요.'));
   const notes = [...new Set([...it.phases.flatMap((p) => p.notes || []), ...(it.schedule.notes || [])])];
   if (it.mapping.eligibility_note) notes.unshift(it.mapping.eligibility_note);
@@ -219,7 +231,7 @@ function renderDetail({ focus = false } = {}) {
     box.replaceChildren(h('div', { class: 'detail__placeholder' },
       h('p', { class: 'detail__placeholder-title' }, state.selected ? '해당 자격증을 찾을 수 없어요' : '자격증을 선택하세요'),
       h('p', {}, state.selected ? '링크가 잘못되었거나 2027년 데이터에 없는 종목이에요. 이름으로 다시 검색해 주세요.' : '검색 결과에서 종목을 고르면 2027년 회차별 일정을 보여 드려요.')));
-    document.title = '2027년 국가기술자격 시험일정 검색기 | 데뷔';
+    document.title = '2027 국가기술자격 시험일정 | 데뷔';
     return;
   }
   const ag = ctx.agencies.get(q.agency_id);

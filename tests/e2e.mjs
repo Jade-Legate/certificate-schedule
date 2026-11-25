@@ -38,7 +38,9 @@ ok('검색 우선순위: 전기기능사 완전일치 1순위', first === '전�
 await pick(page, '전기기능사');
 let t = await detailText(page);
 ok('전기기능사: 제1~4회 + 면제자 검정 탭', ['제1회', '제2회', '제3회', '제4회', '필기시험 면제자 검정'].every((x) => t.includes(x)));
-ok('전기기능사: 필기/실기 접수·시험·발표 표시', ['필기 원서접수', '필기시험', '필기 합격자 발표', '실기 원서접수', '실기시험', '최종 합격자 발표'].every((x) => t.includes(x)));
+const grp = await page.locator('.round-panel:not([hidden]) .phase').evaluateAll((els) => els.map((e) => e.innerText));
+ok('전기기능사: 필기/실기 단계 묶음 + 접수·시험일·발표', grp.length === 2 && grp[0].startsWith('필기') && ['원서접수', '시험일', '합격자 발표'].every((x) => grp[0].includes(x)) && grp[1].startsWith('실기') && ['원서접수', '시험일', '최종 합격자 발표'].every((x) => grp[1].includes(x)), grp.map((g) => g.split('\n')[0]).join(','));
+ok('목록 배지: 접수 시작일 표기', (await page.locator('#results .item .chip').first().innerText()) === '1.5 접수 시작');
 ok('전기기능사: 가장 가까운 접수 강조(제1회 1.5~1.8)', t.includes('가장 가까운 원서접수') && t.includes('2027. 1. 5.(화) ~ 2027. 1. 8.(금)'));
 ok('전기기능사: 응시자격 제한 없음 안내', t.includes('응시자격 제한이 없어요'));
 ok('전기기능사: 큐넷 공식 접수처 링크', (await page.locator('.actions a.btn--primary').getAttribute('href')) === 'https://www.q-net.or.kr/');
@@ -52,7 +54,7 @@ ok('복수 합격자 발표일(1차·2차) 표시', t.includes('1차 6. 25.(금)
 await page.getByRole('tab', { name: '필기시험 면제자 검정' }).click();
 t = await page.locator('.round-panel:not([hidden])').innerText();
 ok('직업계고 면제검정: 자동 응시 불가 안내', t.includes('모든 특성화고·마이스터고 학생이 자동으로 응시할 수 있는 것은 아니며'));
-ok('직업계고 면제검정: 필기 없이 실기 5.10~5.14', t.includes('5. 10.(월) ~ 5. 14.(금)') && !t.includes('필기 원서접수'));
+ok('직업계고 면제검정: 필기 없이 실기 5.10~5.14', t.includes('5. 10.(월) ~ 5. 14.(금)') && (await page.locator('.round-panel:not([hidden]) .phase__title').allInnerTexts()).join() === '실기');
 
 // 2 전기기사 — 기사 일정 + 응시조건
 await openQ(page, '전기기사'); await pick(page, '전기기사'); t = await detailText(page);
@@ -112,7 +114,7 @@ ok('빅데이터분석기사: 제15회 최종발표 2027.12.17', t.includes('12.
 // 12 기술사 — 복수 면접 접수
 await openQ(page, '건축시공기술사'); await pick(page, '건축시공기술사'); t = await detailText(page);
 ok('기술사: 면접 원서접수 ①② 복수 기간', t.includes('① 3. 8.(월) ~ 3. 11.(목)') && t.includes('② 3. 29.(월) ~ 4. 1.(목)'));
-ok('기술사: 최종 합격자 발표·면접 표시', t.includes('면접시험') && t.includes('최종 합격자 발표'));
+ok('기술사: 최종 합격자 발표·면접 표시', (await page.locator('.round-panel:not([hidden]) .phase__title').allInnerTexts()).join() === '필기,면접' && t.includes('최종 합격자 발표'));
 
 // 13 직업계고 면제검정 대상 — 정보통신기능사(KCA) + 기술훈련 검정
 await openQ(page, '정보통신기능사'); await pick(page, '정보통신기능사');
@@ -122,7 +124,7 @@ await openQ(page, '방송통신기능사'); await pick(page, '방송통신기능
 ok('방송통신기능사: 원문 불일치 확인 안내', t.includes('확인이 필요한 일정이 있어요'));
 // 건축도장: 정기+상시, 필기 없음
 await openQ(page, '건축도장'); await pick(page, '건축도장기능사'); t = await detailText(page);
-ok('건축도장기능사: 정기+상시 병행, 필기 없음', t.includes('정기검정') && t.includes('상시검정') && t.includes('필기시험 없이 실기시험만') && !t.includes('필기 원서접수'));
+ok('건축도장기능사: 정기+상시 병행, 필기 없음', t.includes('정기검정') && t.includes('상시검정') && t.includes('필기시험 없이 실기시험만') && !(await page.locator('.phase__title', { hasText: '필기' }).count()));
 // 기사 제3회 필답형 종목별 날짜
 await openQ(page, '산림종묘'); await pick(page, '산림종묘기사'); t = await detailText(page);
 ok('종목별 별도 시험일: 산림종묘기사 제3회 필답형 11.6', t.includes('제3회 필답형 실기시험일: 11.6.(토)'));
@@ -157,7 +159,7 @@ ok('필터 변경 시 URL 갱신(grade=engineer)', page.url().includes('grade=en
 const qid = await page.evaluate(async () => (await (await fetch('data/2027/qualifications.json')).json()).find((q) => q.name === '전기기능사').qualification_id);
 await page.goto(`${BASE}?year=2027&qualification=${qid}`); await page.waitForSelector('#detail-title');
 ok('URL 직접 접속: 종목 상세 복원', (await page.locator('#detail-title').innerText()) === '전기기능사');
-ok('URL 직접 접속: 문서 제목 갱신', (await page.title()).startsWith('전기기능사'));
+ok('URL 직접 접속: 문서 제목 갱신', (await page.title()) === '전기기능사 2027 시험일정 | 데뷔');
 await page.reload(); await page.waitForSelector('#detail-title');
 ok('새로고침 후 상태 유지', (await page.locator('#detail-title').innerText()) === '전기기능사');
 await page.goto(`${BASE}?year=2027&qualification=QNOTEXIST`); await page.waitForSelector('#results .item');

@@ -14,8 +14,8 @@ d.rounded_rectangle((60, 60, 1140, 570), 28, fill=(255, 255, 255))
 import subprocess, io
 logo_png = subprocess.run(['rsvg-convert', '-h', '64', str(out / 'logo.svg')], capture_output=True, check=True).stdout
 logo = Image.open(io.BytesIO(logo_png)).convert('RGBA'); im.paste(logo, (120, 118), logo)
-d.text((120, 230), '2027 국가기술자격', font=font('Bold', 40), fill=PINK)
-d.text((120, 290), '시험일정 검색기', font=font('Black', 88), fill=INK)
+d.text((120, 230), '국가기술자격 541종목', font=font('Bold', 40), fill=PINK)
+d.text((120, 290), '2027 자격증 시험일정', font=font('Black', 88), fill=INK)
 d.text((120, 430), '자격증 이름만 검색하면 필기·실기 원서접수와 시험일을 한눈에', font=font('Medium', 32), fill=GREY)
 d.rounded_rectangle((120, 492, 520, 500), 4, fill=PINK)
 im.save(out / 'og-image.png', optimize=True)
