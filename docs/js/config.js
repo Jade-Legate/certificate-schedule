@@ -13,7 +13,8 @@ export const CONFIG = {
   contact: '',
 
   // 원문 출처
-  sourceNoticeListUrl: 'https://www.moel.go.kr/news/notice/noticeList.do',
+  // 고용노동부 공고 제2026-518호 원문(첨부 4종). 2026-11-25 브라우저로 직접 열어 제목·공고번호·첨부 확인
+  sourceNoticeUrl: 'https://www.moel.go.kr/news/notice/noticeView.do?bbs_seq=20261100752',
   sourceCopyrightUrl: 'https://www.moel.go.kr/site/copyright/copyrightList.do',
 
   // GA4 측정 ID (예: 'G-XXXXXXXXXX') — 비어 있으면 분석 스크립트를 로드하지 않는다

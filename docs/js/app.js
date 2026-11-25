@@ -8,7 +8,9 @@ import {
 
 const $ = (s, el = document) => el.querySelector(s);
 const params = new URLSearchParams(location.search);
-const TODAY = todayKST(params.get('today'));
+// QA용 날짜 고정(?today=YYYY-MM-DD)은 로컬 개발 환경에서만 허용한다. 운영 주소에서는 무시.
+const IS_LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+const TODAY = todayKST(IS_LOCAL ? params.get('today') : null);
 const mq = matchMedia('(max-width: 899px)');
 
 function h(tag, attrs = {}, ...children) {
@@ -77,7 +79,7 @@ function writeURL(push) {
   if (state.grade) p.set('grade', state.grade);
   if (state.selected) p.set('qualification', state.selected);
   // 블로그 유입 UTM 등 기타 파라미터 보존
-  for (const [k, v] of new URLSearchParams(location.search)) if (/^utm_|^today$/.test(k)) p.set(k, v);
+  for (const [k, v] of new URLSearchParams(location.search)) if (/^utm_/.test(k) || (IS_LOCAL && k === 'today')) p.set(k, v);
   const url = `${location.pathname}?${p.toString()}`;
   if (url === `${location.pathname}${location.search}`) return;
   history[push ? 'pushState' : 'replaceState']({ ...state, data: null }, '', url);
@@ -341,11 +343,19 @@ function onInput() {
   clearTimeout(typingTimer); typingTimer = setTimeout(() => writeURL(false), 300);
 }
 
+function fmtDot(iso) { const [y, m, d] = iso.split('-').map(Number); return `${y}.${String(m).padStart(2, '0')}.${String(d).padStart(2, '0')}.`; }
+
 function renderSource(meta) {
   const ds = meta.datasets[String(state.year)];
+  const ext0 = (href, text) => h('a', { href, target: '_blank', rel: 'noopener' }, text, h('span', { class: 'sr-only' }, ' (새 창)'));
+  // 데이터 갱신일은 metadata.json 의 data_updated(시험일정 데이터 기준)만 쓴다. 배포일과 무관.
+  $('#data-meta').replaceChildren(
+    h('span', {}, `데이터 최종 업데이트: ${fmtDot(ds.data_updated)}`),
+    h('span', { class: 'search-info__sep', 'aria-hidden': 'true' }, '·'),
+    h('span', {}, '출처: ', ext0(CONFIG.sourceNoticeUrl, ds.announcement_no)));
   const ext = (href, text) => h('a', { href, target: '_blank', rel: 'noopener' }, text, h('span', { class: 'sr-only' }, ' (새 창)'));
   const items = [
-    ['출처 문서', h('span', {}, `${ds.title}(상세본·요약본) · `, ext(CONFIG.sourceNoticeListUrl, '고용노동부 공지사항'))],
+    ['출처 문서', h('span', {}, ext(CONFIG.sourceNoticeUrl, `${ds.title} (고용노동부 공지사항)`))],
     ['공고번호', ds.announcement_no],
     ['공고일', `${fmtDate(ds.published, { year: true })} (문서 기재) · 고용노동부 누리집 게시 ${fmtDate(ds.posted, { year: true })}`],
     ['데이터 최종 업데이트', fmtDate(ds.data_updated, { year: true })],

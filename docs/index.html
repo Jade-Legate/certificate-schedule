@@ -41,7 +41,6 @@
         <p class="eyebrow">2027 국가기술자격</p>
         <h1 id="title">시험일정 검색기</h1>
         <p class="lead">자격증 이름으로 시행 회차, 원서접수, 시험일, 합격자 발표일을 한 번에 확인하세요.</p>
-        <p class="disclaimer" role="note"><strong>비공식 참고 서비스</strong>예요. 원서접수 전 최종 일정은 <a href="https://www.q-net.or.kr/" target="_blank" rel="noopener">큐넷(Q-Net)<span class="sr-only"> (새 창)</span></a> 등 시행기관 공고에서 꼭 확인하세요.</p>
         <form class="search" role="search" id="search-form" autocomplete="off">
           <label for="q" class="sr-only">자격증명 검색</label>
           <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -51,6 +50,10 @@
           </button>
           <button type="submit" class="btn btn--primary search__submit">검색</button>
         </form>
+        <div class="search-info">
+          <p class="search-info__notice" id="ref-notice" role="note">시험일정은 참고용이며 실시간으로 연동되지 않습니다. 원서접수 및 응시 전 해당 시행기관의 최신 공식 공고를 확인해 주세요.</p>
+          <p class="search-info__meta" id="data-meta"></p>
+        </div>
       </div>
     </section>
 
@@ -86,7 +89,11 @@
   <footer class="footer" id="footer">
     <div class="wrap">
       <div class="footer__grid" id="source-info"></div>
-      <p class="footer__note">이 검색기는 데뷔(DEBUT)가 운영하는 <strong>비공식 참고 서비스</strong>로, 고용노동부·한국산업인력공단 등 정부기관이나 시행기관과 관계가 없습니다. 공고된 검정시행계획을 옮겨 정리했으며 자동 대조 검사를 거쳤지만, 시행기관의 확정 일정을 보증하지 않습니다. 시험일정은 시행기관 사정에 따라 바뀔 수 있으니 원서접수 전 반드시 큐넷(Q-Net) 등 시행기관의 공식 공고를 확인하세요.</p>
+      <section class="terms" aria-labelledby="terms-title">
+        <h2 class="footer__title" id="terms-title">이용 안내</h2>
+        <p>본 서비스는 데뷔(DEBUT)가 공식 검정시행계획을 바탕으로 재구성한 참고용 정보 서비스이며, 고용노동부나 시험 시행기관의 공식 서비스가 아닙니다.</p>
+        <p>시험일정 및 세부 응시 조건은 시행기관의 사정에 따라 변경될 수 있으며, 변경 사항이 실시간으로 반영되지 않을 수 있습니다. 원서접수 및 응시 전 반드시 해당 시행기관의 최신 공식 공고를 확인해 주세요. 본 서비스의 정보와 공식 공고가 다른 경우 공식 공고를 우선합니다.</p>
+      </section>
       <p class="footer__brand" id="operator">운영 데뷔(DEBUT)</p>
     </div>
   </footer>

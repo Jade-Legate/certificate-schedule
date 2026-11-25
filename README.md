@@ -45,7 +45,7 @@ source/                  # 원본 HWPX·PDF (gitignore, 공개 저장소에 올�
 mkdir -p .site && ln -sfn ../docs .site/certificate-schedule   # Pages 하위 경로 재현
 python3 -m http.server 8765 --directory .site
 # http://localhost:8765/certificate-schedule/
-# 날짜 상태 확인용: ?today=2027-03-18 (KST 기준 오늘 대신 지정한 날짜 사용)
+# 날짜 상태 확인용: ?today=2027-03-18 (localhost에서만 동작, 운영 주소에서는 무시)
 ```
 
 E2E QA는 Playwright가 필요합니다(`npm i`). `BASE=http://localhost:8765/certificate-schedule/ node tests/e2e.mjs qa-shots`로 실행합니다. 배포 환경은 `BASE=https://jade-legate.github.io/certificate-schedule/`로 지정합니다.
@@ -56,7 +56,9 @@ E2E QA는 Playwright가 필요합니다(`npm i`). `BASE=http://localhost:8765/ce
 |---|---|---|
 | `roadmapUrl` | 데뷔 로드맵 CTA 링크. 비어 있으면 CTA 영역을 숨깁니다 | `https://debut.ai.kr/?utm_source=naver_blog&utm_medium=referral&utm_campaign=blog&utm_content=post_18` (담당자 제공) |
 | `ga4MeasurementId` | GA4 측정 ID(`G-…`). 비어 있으면 분석 스크립트를 로드하지 않습니다 | 미설정 |
-| `siteUrl` | 공유 링크와 canonical 기준 주소 | 배포 주소 |
+| `siteUrl` | canonical 기준 주소 | 배포 주소 |
+| `sourceNoticeUrl` | 고용노동부 공고 원문 직접 링크(검색창 하단·푸터 출처) | 공고 제2026-518호 (2026-11-25 확인) |
+| `contact` | 오류 신고·문의처. 비어 있으면 표시하지 않음 | 미설정 |
 
 GA4 이벤트: `page_view`(자동), `certificate_search`(입력이 멈춘 뒤 1회, 결과 건수와 검색어 길이만 전송), `search_no_result`, `certificate_select`, `schedule_view`, `official_site_click`, `roadmap_cta_click`. 검색어 원문과 개인정보는 전송하지 않습니다.
 
@@ -69,6 +71,10 @@ https://jade-legate.github.io/certificate-schedule/?year=2027&utm_source=naver_b
 ```
 
 삽입 위치마다 `utm_content` 값만 바꿔 사용합니다(예: `intro_banner`, `schedule_table_bottom`, `post_footer`). 특정 종목 글에서는 `&qualification=<ID>`를 붙이면 해당 종목 상세가 바로 열립니다. ID는 검색기에서 종목을 연 뒤 주소창에서 확인할 수 있습니다.
+
+## 데이터 갱신일 표기
+
+검색창 아래의 '데이터 최종 업데이트'는 `docs/data/metadata.json`의 `data_updated`를 그대로 보여 줍니다. 이 값은 `scripts/build_all.sh <연도> <갱신일>`로 시험일정 데이터를 다시 만들 때만 바뀝니다. UI만 고친 배포에서는 바꾸지 않습니다.
 
 ## 연도별 데이터 업데이트 방법 (예: 2028년)
 

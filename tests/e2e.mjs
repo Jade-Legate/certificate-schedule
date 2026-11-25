@@ -131,7 +131,13 @@ ok('구 종목명 별칭: 임업종묘 → 실제 종목(임업종묘기능사) 
 
 // 데뷔 로드맵 CTA
 ok('로드맵 슬림 배너: 검색 영역 바로 아래 + 설정 URL(새 창)', await page.locator('#cta').isVisible() && (await page.locator('#cta').getAttribute('href')).startsWith('https://debut.ai.kr/') && (await page.locator('#cta').getAttribute('target')) === '_blank' && (await page.locator('#cta').boundingBox()).height <= 60 && await page.evaluate(() => document.querySelector('#cta').compareDocumentPosition(document.querySelector('#layout')) & Node.DOCUMENT_POSITION_FOLLOWING));
-ok('비공식 서비스·큐넷 확인 안내(상단·상세·푸터)', (await page.locator('.disclaimer').innerText()).includes('비공식 참고 서비스') && (await page.locator('#footer').innerText()).includes('관계가 없습니다'));
+ok('검색창 하단 참고용 안내', (await page.locator('#ref-notice').innerText()) === '시험일정은 참고용이며 실시간으로 연동되지 않습니다. 원서접수 및 응시 전 해당 시행기관의 최신 공식 공고를 확인해 주세요.');
+ok('데이터 최종 업데이트(metadata 연동) + 공고 원문 링크', (await page.locator('#data-meta').innerText()).includes('데이터 최종 업데이트: 2026.11.24.') && (await page.locator('#data-meta a').getAttribute('href')) === 'https://www.moel.go.kr/news/notice/noticeView.do?bbs_seq=20261100752');
+const ft = await page.locator('#footer').innerText();
+ok('최하단 이용 안내(공식 서비스 아님·실시간 미반영·공식 공고 우선)', ['이용 안내', '공식 서비스가 아닙니다', '실시간으로 반영되지 않을 수 있습니다', '공식 공고를 우선합니다'].every((x) => ft.includes(x)));
+ok('참고용 안내 문구 과다 반복 없음(본문 1회)', (await page.locator('body').innerText()).split('실시간으로 연동되지 않습니다').length - 1 === 1);
+const sb = await page.locator('#search-form').boundingBox(); const lb = await page.locator('#layout').boundingBox();
+ok('검색창 폭·좌우 정렬 = 결과 영역', Math.abs(sb.x - lb.x) <= 1 && Math.abs(sb.width - lb.width) <= 2, `search ${Math.round(sb.x)}/${Math.round(sb.width)} layout ${Math.round(lb.x)}/${Math.round(lb.width)}`);
 ok('선택 종목 표시: 왼쪽 강조선 없음', await page.evaluate(() => { const e = document.querySelector('.item.is-on'); return !e || getComputedStyle(e).boxShadow === 'none'; }));
 ok('공식 로고 표시', await page.locator('.logo img[src="assets/logo.svg"]').isVisible() && await page.evaluate(() => document.querySelector('.logo img').naturalWidth > 0));
 
@@ -190,6 +196,7 @@ ok('키보드: 등급 필터 방향키', (await page.locator('[role=radio][aria-
 await page.click('#open-source'); ok('공식 자료 안내 모달 열림', await page.locator('#source-dialog').isVisible());
 await page.keyboard.press('Escape'); ok('모달 Esc 닫힘', !(await page.locator('#source-dialog').isVisible()));
 const srcTxt = await page.locator('#source-info').innerText();
+ok('출처 문서 = 공고 원문 직접 링크', (await page.locator('#source-info a').first().getAttribute('href')) === 'https://www.moel.go.kr/news/notice/noticeView.do?bbs_seq=20261100752');
 ok('출처·공고번호·공고일·게시일·업데이트일·저작권·국방부 제외 표기', ['고용노동부 공고 제2026-518호', '2026. 11. 20.(금)', '2026. 11. 23.(월)', '데이터 최종 업데이트', '고용노동부 저작권 정책', '국방부', '541종목'].every((x) => srcTxt.includes(x)), srcTxt.slice(0, 80));
 
 // 제거된 기능·푸터
