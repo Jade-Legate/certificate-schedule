@@ -79,11 +79,14 @@ https://jade-legate.github.io/certificate-schedule/?year=2027&utm_source=naver_b
 ## 연도별 데이터 업데이트 방법 (예: 2028년)
 
 1. 고용노동부 공고의 상세본·요약본 HWPX와 PDF를 `source/2028_detail.hwpx`, `source/2028_summary.hwpx`, `source/2028_detail.pdf`, `source/2028_summary.pdf`로 저장합니다.
-2. 표 구조를 확인합니다: `python3 -I scripts/hwpx_dump.py source/2028_detail.hwpx > build/order.txt`, `python3 -I scripts/print_tables.py build/out/...`
-   표 번호(`s0t7` 등)와 열 순서가 바뀌었으면 `scripts/build_data.py`의 기관별 빌드 함수를 수정합니다. `YEAR`, `OVERRIDES`(확정 수정), 공고번호와 발표일(`export_metadata.py`)도 갱신합니다.
-3. `scripts/build_all.sh 2028 <갱신일>`을 실행합니다. HWPX 추출, JSON·CSV 생성, PDF 대조 검증, metadata 갱신까지 한 번에 진행됩니다.
+2. `scripts/build_data.py`의 `YEAR`, `OVERRIDES`(확정 수정), 공고번호와 발표일(`export_metadata.py`)을 갱신합니다.
+3. `scripts/build_all.sh 2028 <갱신일>`을 실행합니다. HWPX 추출, JSON·CSV 생성, PDF 대조 검증, metadata 갱신, 정적 파일 연도 반영(`apply_year.py`)까지 한 번에 진행됩니다.
+   - 공고 표는 문서 안 순서가 아니라 **내용**(기관명 제목 + 표 머리글 + 가까운 소제목)으로 찾습니다. 규칙은 `scripts/table_specs.py`에 있습니다.
+   - 표를 못 찾거나 두 개 이상 걸리면 빌드가 멈추고 어떤 표가 문제인지 알려 줍니다. 이때는 `python3 -I scripts/hwpx_dump.py source/2028_detail.hwpx > build/order.txt`로 표와 소제목을 확인하고 `table_specs.py`의 해당 규칙만 고칩니다.
+   - 기관별 종목 수가 요약본과 다르거나, 등급별 정기검정 회차가 0건이거나, 종목명을 찾지 못하면 역시 빌드가 멈춥니다(`build_data.py`의 `STRICT_KINDS`).
+   - 열 순서까지 바뀐 경우에만 `build_data.py`의 기관별 빌드 함수를 수정합니다.
 4. `data/2028/review/validation_report.md`가 전 항목 통과인지 확인하고, `review_items.json`의 `error`·`info` 항목을 검토해 `REVIEW.md`에 결정을 기록합니다. 기관별 종목 수의 기대값도 요약본에 맞게 고칩니다(`validate.py`의 `expect`).
-5. `docs/js/config.js`의 `defaultYear`와 `index.html`의 제목·메타·OG 문구, `assets/og-image.png`(`scripts/make_assets.py`)를 새 연도로 바꿉니다.
+5. 연도 표기는 자동입니다. 화면 문구는 불러온 연도(`state.year`)를, 공고번호·제목은 `metadata.json`을 따릅니다. 검색엔진·링크 미리보기용 정적 문구(`index.html` 제목·메타·OG), `config.js`의 `defaultYear`, OG 이미지는 `scripts/apply_year.py`가 `metadata.json`의 `current_year`로 맞춥니다. 반영 여부만 확인하려면 `python3 -I scripts/apply_year.py --check`.
 6. 로컬에서 E2E QA를 실행한 뒤 커밋·푸시합니다. GitHub Pages는 main 브랜치의 `/docs`에서 자동 배포됩니다.
 
 이전 연도 데이터는 `docs/data/<연도>/`에 그대로 두면 `?year=` 파라미터로 계속 조회할 수 있습니다.

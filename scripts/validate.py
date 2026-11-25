@@ -96,7 +96,7 @@ def main():
             continue
         need = [clean(x) for x in r if clean(x)]
         name = need[0]; rest = need[1:]
-        loose = q['source_reference'].startswith('상세:s1t35')  # KCA 표는 칸 사이에 다른 열(유형·지역)이 있음
+        loose = q['agency_id'] == 'KCA'  # KCA 표는 칸 사이에 다른 열(유형·지역)이 있음
         hit = False
         tails = []
         for i, line in enumerate(pdf_lines):

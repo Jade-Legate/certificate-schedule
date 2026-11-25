@@ -2,7 +2,7 @@ import { CONFIG } from './config.js';
 import { initAnalytics, track, trackSearch } from './analytics.js';
 import { GRADE_FILTERS, buildIndex, search, countByGrade } from './search.js';
 import {
-  EXAM_TYPE_LABEL, STATUS_TEXT, todayKST, buildView, nextRegistration, roundTitle, phaseRows,
+  EXAM_TYPE_LABEL, statusText, todayKST, buildView, nextRegistration, roundTitle, phaseRows,
   fmtDate, fmtPeriod,
 } from './schedule.js';
 
@@ -31,6 +31,7 @@ function h(tag, attrs = {}, ...children) {
 
 const state = { year: CONFIG.defaultYear, q: '', grade: '', selected: null, data: null };
 let ctx = null; let index = null;
+let DS = null; // metadata.json 의 현재 연도 데이터셋 정보 (공고번호·제목·기준일)
 
 // ------------------------------------------------------------------ 데이터 로딩
 async function loadJSON(path) {
@@ -89,12 +90,12 @@ function writeURL(push) {
 function badgeFor(q) {
   if (q.annual_status !== 'scheduled') {
     const tone = q.annual_status === 'partially_held' ? 'warn' : 'muted';
-    return h('span', { class: `chip chip--${tone}` }, STATUS_TEXT[q.annual_status]);
+    return h('span', { class: `chip chip--${tone}` }, statusText(q.annual_status, state.year));
   }
   const view = buildView(q, ctx);
   if (view.items.every((i) => i.schedule.exam_type === 'rolling')) return h('span', { class: 'chip chip--info' }, '상시검정');
   const nx = nextRegistration(view, TODAY);
-  if (!nx) return h('span', { class: 'chip chip--muted' }, '2027 접수 종료');
+  if (!nx) return h('span', { class: 'chip chip--muted' }, `${state.year} 접수 종료`);
   if (nx.status.key === 'open') return h('span', { class: 'chip chip--open' }, '접수 중');
   const md = fmtDate(nx.period.start).replace(/\s/g, '').replace(/\.\(.\)$/, '').replace(/\.$/, '');
   return h('span', { class: 'chip chip--upcoming', title: `다음 원서접수 시작 ${fmtDate(nx.period.start)}` }, `${md} 접수 시작`);
@@ -176,10 +177,10 @@ const SPECIAL_NOTICE = {
 
 function statusBanner(q) {
   const msg = {
-    biennial_not_held: '해당 종목은 격년제 시행에 따라 2027년 시험이 시행되지 않습니다.',
-    partially_held: '해당 종목은 격년제 시행에 따라 2027년 정기검정(필기·실기)이 시행되지 않습니다. 단, 산업수요 맞춤형 고등학교·특성화고 등 필기시험 면제자 검정은 정상 시행됩니다.',
-    abolished: '해당 종목은 폐지되어 2027년 시험이 시행되지 않습니다.',
-    not_conducted: '해당 종목은 시행기관(한국산업안전보건공단)의 내부 사정으로 2027년 검정형 시험이 시행되지 않습니다.',
+    biennial_not_held: `해당 종목은 격년제 시행에 따라 ${state.year}년 시험이 시행되지 않습니다.`,
+    partially_held: `해당 종목은 격년제 시행에 따라 ${state.year}년 정기검정(필기·실기)이 시행되지 않습니다. 단, 산업수요 맞춤형 고등학교·특성화고 등 필기시험 면제자 검정은 정상 시행됩니다.`,
+    abolished: `해당 종목은 폐지되어 ${state.year}년 시험이 시행되지 않습니다.`,
+    not_conducted: `해당 종목은 시행기관(한국산업안전보건공단)의 내부 사정으로 ${state.year}년 검정형 시험이 시행되지 않습니다.`,
   }[q.annual_status];
   if (!msg) return null;
   const extra = (ctx.changesByQ.get(q.qualification_id) || []).map((c) => c.reason);
@@ -209,7 +210,7 @@ function renderPhaseTable(it, wrap) {
           r.status ? h('span', { class: `chip chip--${r.status.tone}` }, r.status.label) : null,
           (r.extra || []).map((x) => h('span', { class: 'timeline__extra' }, x)),
           r.correction ? h('span', { class: 'timeline__extra timeline__extra--fix' },
-            `공식 자료에는 ‘${r.correction.original}’로 적혀 있지만 시험일보다 앞선 날짜라 2027년 오기로 보고 표시했어요. 시행기관의 정정 공고로 확인된 내용은 아니니 접수 전 시행기관 누리집에서 확인하세요.`) : null)));
+            `공식 자료에는 ‘${r.correction.original}’로 적혀 있지만 시험일보다 앞선 날짜라 ${state.year}년 오기로 보고 표시했어요. 시행기관의 정정 공고로 확인된 내용은 아니니 접수 전 시행기관 누리집에서 확인하세요.`) : null)));
     }
     group.append(dl);
     wrap.append(group);
@@ -230,14 +231,14 @@ function renderDetail({ focus = false } = {}) {
   if (!q) {
     box.replaceChildren(h('div', { class: 'detail__placeholder' },
       h('p', { class: 'detail__placeholder-title' }, state.selected ? '해당 자격증을 찾을 수 없어요' : '자격증을 선택하세요'),
-      h('p', {}, state.selected ? '링크가 잘못되었거나 2027년 데이터에 없는 종목이에요. 이름으로 다시 검색해 주세요.' : '검색 결과에서 종목을 고르면 2027년 회차별 일정을 보여 드려요.')));
-    document.title = '2027 국가기술자격 시험일정 | 데뷔';
+      h('p', {}, state.selected ? `링크가 잘못되었거나 ${state.year}년 데이터에 없는 종목이에요. 이름으로 다시 검색해 주세요.` : `검색 결과에서 종목을 고르면 ${state.year}년 회차별 일정을 보여 드려요.`)));
+    document.title = `${state.year} 국가기술자격 시험일정 | 데뷔`;
     return;
   }
   const ag = ctx.agencies.get(q.agency_id);
   const view = buildView(q, ctx);
   const types = [...new Set(view.items.map((i) => i.schedule.exam_type))];
-  document.title = `${q.name} 2027 시험일정 | 데뷔`;
+  document.title = `${q.name} ${state.year} 시험일정 | 데뷔`;
 
   const back = h('button', { type: 'button', class: 'back', onclick: () => {
     if (history.state && history.state.fromList) history.back(); else select(null, { push: true });
@@ -298,7 +299,7 @@ function renderDetail({ focus = false } = {}) {
       renderPhaseTable(it, panel);
       panels.append(panel);
     });
-    parts.push(h('div', { class: 'section' }, h('h3', { class: 'section__title' }, '2027년 시행 회차'), tablist, panels));
+    parts.push(h('div', { class: 'section' }, h('h3', { class: 'section__title' }, `${state.year}년 시행 회차`), tablist, panels));
   }
 
   if (ELIGIBILITY[q.grade_code] && q.annual_status !== 'abolished' && q.annual_status !== 'not_conducted') {
@@ -315,7 +316,7 @@ function renderDetail({ focus = false } = {}) {
     `${ag.site_name} 바로가기`, h('span', { class: 'sr-only' }, ' (새 창)')),
     h('p', { class: 'caution' }, `공고된 계획을 정리한 참고용 일정이에요. 원서접수 전 ${ag.site_name}에서 최종 일정을 꼭 확인하세요.`));
   parts.push(actions);
-  parts.push(h('p', { class: 'source' }, `출처: 고용노동부 공고 제2026-518호 2027년 국가기술자격 검정시행계획 · ${q.source_reference}`));
+  parts.push(h('p', { class: 'source' }, `출처: ${DS.announcement_no} ${DS.title} · ${q.source_reference}`));
 
   box.replaceChildren(...parts);
   track('schedule_view', { qualification_id: q.qualification_id, grade: q.grade_code, annual_status: q.annual_status });
@@ -386,6 +387,13 @@ function renderSource(meta) {
   }
 }
 
+// 정적 HTML(검색엔진·미리보기용)의 연도와 별개로, 화면 제목은 실제로 불러온 연도를 따른다.
+function applyYear() {
+  const y = state.year;
+  $('#title').textContent = `${y} 자격증 시험일정`;
+  const logo = $('.logo'); if (logo) logo.title = `${y} 자격증 시험일정 처음으로`;
+}
+
 function showError(err) {
   console.warn('[certificate-schedule] 데이터 로딩 실패', err);
   $('#count').textContent = '데이터를 불러오지 못했어요';
@@ -410,6 +418,8 @@ async function init() {
     if (!meta.datasets[String(state.year)]) state.year = meta.current_year;
     ctx = await loadData(state.year);
   } catch (e) { showError(e); return; }
+  DS = meta.datasets[String(state.year)];
+  applyYear();
   index = buildIndex(ctx.qualifications);
   renderSource(meta);
   renderList();

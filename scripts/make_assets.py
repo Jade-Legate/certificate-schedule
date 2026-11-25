@@ -1,7 +1,11 @@
-"""브랜드 에셋 생성: 공식 로고(docs/assets/logo.svg, Figma 원본 export)로 OG 이미지·아이콘 생성. 사용: python3 -I scripts/make_assets.py docs/assets"""
-import sys, pathlib
+"""브랜드 에셋 생성: 공식 로고(docs/assets/logo.svg, Figma 원본 export)로 OG 이미지·아이콘 생성.
+사용: python3 -I scripts/make_assets.py docs/assets
+OG 이미지의 연도·종목 수는 docs/data/metadata.json (current_year, counts.qualifications)에서 읽는다."""
+import sys, pathlib, json
 from PIL import Image, ImageDraw, ImageFont
 out = pathlib.Path(sys.argv[1]); out.mkdir(parents=True, exist_ok=True)
+META = json.loads((out.parent / 'data' / 'metadata.json').read_text(encoding='utf-8'))
+YEAR = META['current_year']; N_QUAL = META['datasets'][str(YEAR)]['counts']['qualifications']
 F = '/usr/share/fonts/opentype/noto/NotoSansCJK-{}.ttc'
 def font(w, size):
     # ttc index 1 = KR
@@ -14,8 +18,8 @@ d.rounded_rectangle((60, 60, 1140, 570), 28, fill=(255, 255, 255))
 import subprocess, io
 logo_png = subprocess.run(['rsvg-convert', '-h', '64', str(out / 'logo.svg')], capture_output=True, check=True).stdout
 logo = Image.open(io.BytesIO(logo_png)).convert('RGBA'); im.paste(logo, (120, 118), logo)
-d.text((120, 230), '국가기술자격 541종목', font=font('Bold', 40), fill=PINK)
-d.text((120, 290), '2027 자격증 시험일정', font=font('Black', 88), fill=INK)
+d.text((120, 230), f'국가기술자격 {N_QUAL}종목', font=font('Bold', 40), fill=PINK)
+d.text((120, 290), f'{YEAR} 자격증 시험일정', font=font('Black', 88), fill=INK)
 d.text((120, 430), '자격증 이름만 검색하면 필기·실기 원서접수와 시험일을 한눈에', font=font('Medium', 32), fill=GREY)
 d.rounded_rectangle((120, 492, 520, 500), 4, fill=PINK)
 im.save(out / 'og-image.png', optimize=True)

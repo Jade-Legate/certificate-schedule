@@ -13,8 +13,9 @@ export const EXAM_TYPE_LABEL = {
 
 export const PHASE_LABEL = { written: '필기', practical: '실기', interview: '면접' };
 
+// {year} 는 statusText()에서 현재 연도로 바뀐다.
 export const STATUS_TEXT = {
-  biennial_not_held: '2027년 미시행',
+  biennial_not_held: '{year}년 미시행',
   partially_held: '정기검정 미시행',
   abolished: '폐지',
   not_conducted: '검정형 미실시',
@@ -134,4 +135,8 @@ export function phaseRows(p, today, { isLastPhase } = {}) {
       correction: p.correction || null });
   }
   return rows;
+}
+
+export function statusText(key, year) {
+  return (STATUS_TEXT[key] || '').replace('{year}', String(year));
 }

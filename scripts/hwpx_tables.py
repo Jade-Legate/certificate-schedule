@@ -66,7 +66,45 @@ def extract(path):
             tables.append({'table_id': f's{si}t{ti}', 'section': si, 'index': ti,
                            'rows': grid, 'cells': direct})
             ti += 1
+        # 표 앞 문맥(본문 문단·소제목·기관명)을 표 순서대로 붙인다. 표 번호는 위와 같은 전위 순회 순서.
+        for i, ctx in enumerate(_contexts(root)):
+            tables[len(tables) - ti + i].update(ctx)
     return tables, paragraphs
+
+
+HEADING = re.compile(r'^(□|<|[0-9]+[.)]|[가-하][.)]|\(?[0-9]+\)|[ⅠⅡⅢⅣⅤ])')
+AGENCY = re.compile(r'^(?:[0-9]+\.\s*)?([가-힣]+(?:공단|상공회의소|기술원|위원회|진흥원))$')
+
+
+def _contexts(root):
+    """표마다 {context: 직전 본문 문단 6개, headings: 직전 소제목 8개, agency: 직전 기관명 제목}.
+    표 안의 문단은 본문 문맥에서 제외한다."""
+    out, paras, heads, buf = [], [], [], []
+    agency = [None]
+
+    def walk(n, in_tbl):
+        if n.tag == HP + 'tbl':
+            pending = ''.join(buf).strip()  # 표와 같은 문단에서 표 앞에 있는 글자
+            ctx, hd = paras[-6:], heads[-8:]
+            if pending:
+                ctx = (ctx + [pending])[-6:]
+                if HEADING.match(pending): hd = (hd + [pending])[-8:]
+            out.append({'context': ctx, 'headings': hd, 'agency': agency[0]})
+            for c in n: walk(c, True)
+            return
+        if n.tag == HP + 't' and not in_tbl:
+            buf.append(''.join(n.itertext()))
+        for c in n: walk(c, in_tbl)
+        if n.tag == HP + 'p' and not in_tbl:
+            t = ''.join(buf).strip(); buf.clear()
+            if not t: return
+            paras.append(t)
+            if HEADING.match(t): heads.append(t)
+            m = AGENCY.match(t)
+            if m: agency[0] = m.group(1)
+
+    walk(root, False)
+    return out
 
 if __name__ == '__main__':
     src, out = sys.argv[1], sys.argv[2]
